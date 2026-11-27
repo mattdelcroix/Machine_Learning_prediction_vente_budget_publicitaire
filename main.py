@@ -68,3 +68,25 @@ y_pred_test = reg.predict(X_test)
 #Utilisons la RMSE et la MAPE pour évaluer la performance du modèle 
 print(f"RMSE: {mean_squared_error(y_test, y_pred_test)}")
 print(f"MAPE: {mean_absolute_percentage_error(y_test, y_pred_test)}")
+
+##Ajout d'un terme quadratique pour la variable TV "tv2"
+df['tv2'] = df.tv**2
+#Normalisation de l'amplitude en forçant les variables entre 0 et 1.
+scaler = MinMaxScaler()
+scaler.fit(df)
+data_array = scaler.transform(df)
+df = pd.DataFrame(data_array, columns = ['tv','radio','journaux','ventes','tv2'])
+print(df.describe().loc[['min','max']])
+
+#Entrainons le modèle avec la variable tv2
+X = df[['tv','radio','journaux', 'tv2']]
+y = df.ventes
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
+
+reg.fit(X_train, y_train)
+y_hat_test = reg.predict(X_test)
+
+print(f"Coefficients: {reg.coef_}")
+print(f"RMSE: {mean_squared_error(y_test, y_hat_test)}")
+print(f"MAPE: {mean_absolute_percentage_error(y_test, y_hat_test)}")
